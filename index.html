@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PDROTi — Digital Innovations</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Exo+2:ital,wght@0,100..900;1,100..900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+  :root {
+    --bg: #070a0f;
+    --surface: #0d1117;
+    --surface2: #131920;
+    --border: rgba(255,255,255,0.07);
+    --accent: #00c8ff;
+    --accent2: #0066ff;
+    --accent3: #7b2fff;
+    --text: #e8edf5;
+    --text-muted: #6b7a90;
+    --text-dim: #3a4556;
+    --glow: rgba(0,200,255,0.15);
+    --glow-strong: rgba(0,200,255,0.35);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Exo 2', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CUSTOM CURSOR */
+  .cursor {
+    position: fixed; width: 12px; height: 12px;
+    background: var(--accent); border-radius: 50%;
+    pointer-events: none; z-index: 9999;
+    transform: translate(-50%,-50%);
+    transition: width .2s, height .2s, background .2s;
+    mix-blend-mode: screen;
+  }
+  .cursor-ring {
+    position: fixed; width: 36px; height: 36px;
+    border: 1px solid rgba(0,200,255,0.5); border-radius: 50%;
+    pointer-events: none; z-index: 9998;
+    transform: translate(-50%,-50%);
+    transition: all .12s ease;
+  }
+  body:has(a:hover) .cursor, body:has(button:hover) .cursor { width: 20px; height: 20px; background: #fff; }
+  body:has(a:hover) .cursor-ring, body:has(button:hover) .cursor-ring { width: 50px; height: 50px; border-color: var(--accent); }
+
+  /* NOISE OVERLAY */
+  body::before {
+    content: ''; position: fixed; inset: 0; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.025; pointer-events: none;
+  }
+
+  /* NAVBAR */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 4rem;
+    background: rgba(7,10,15,0.8);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    display: flex; align-items: center; gap: .75rem;
+    text-decoration: none;
+  }
+  .nav-logo-text {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700; font-size: 1.4rem;
+    letter-spacing: .15em; color: var(--text);
+  }
+  .nav-logo-text span { color: var(--accent); }
+  .nav-links {
+    display: flex; gap: 2.5rem; list-style: none;
+  }
+  .nav-links a {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: .85rem; font-weight: 600;
+    letter-spacing: .12em; text-transform: uppercase;
+    color: var(--text-muted); text-decoration: none;
+    transition: color .2s;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: ''; position: absolute; bottom: -4px; left: 0;
+    width: 0; height: 1px; background: var(--accent);
+    transition: width .3s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+  .nav-links a:hover::after { width: 100%; }
+  .nav-cta {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: .85rem; font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase;
+    color: var(--bg); background: var(--accent);
+    border: none; padding: .6rem 1.5rem;
+    cursor: none; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    transition: background .2s, box-shadow .2s;
+  }
+  .nav-cta:hover { background: #fff; box-shadow: 0 0 20px var(--glow-strong); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: flex-start;
+    padding: 8rem 4rem 4rem;
+    position: relative; overflow: hidden;
+  }
+
+  /* GRID BG */
+  .hero::after {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,200,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,200,255,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+    pointer-events: none;
+  }
+
+  /* GLOW ORBS */
+  .orb {
+    position: absolute; border-radius: 50%;
+    pointer-events: none; filter: blur(80px);
+  }
+  .orb1 {
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(0,102,255,0.15), transparent 70%);
+    top: -100px; right: -100px;
+    animation: orb-float 8s ease-in-out infinite;
+  }
+  .orb2 {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(123,47,255,0.12), transparent 70%);
+    bottom: 50px; left: -100px;
+    animation: orb-float 11s ease-in-out infinite reverse;
+  }
+  .orb3 {
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(0,200,255,0.1), transparent 70%);
+    top: 40%; left: 40%;
+    animation: orb-float 14s ease-in-out infinite;
+  }
+  @keyframes orb-float {
+    0%,100% { transform: translateY(0) translateX(0); }
+    33% { transform: translateY(-30px) translateX(20px); }
+    66% { transform: translateY(20px) translateX(-15px); }
+  }
+
+  .hero-tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .75rem; letter-spacing: .2em;
+    color: var(--accent); margin-bottom: 1.5rem;
+    display: flex; align-items: center; gap: .75rem;
+    animation: fade-up .8s ease both;
+  }
+  .hero-tag::before {
+    content: ''; display: block;
+    width: 40px; height: 1px; background: var(--accent);
+  }
+
+  .hero-logo-wrap {
+    margin-bottom: 2rem;
+    animation: fade-up .8s .1s ease both;
+  }
+  .hero-logo-svg {
+    width: 320px; height: auto;
+    filter: drop-shadow(0 0 40px rgba(0,200,255,0.3));
+  }
+
+  h1.hero-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700; font-size: clamp(2.5rem, 5vw, 4.5rem);
+    line-height: 1.05; letter-spacing: -.01em;
+    max-width: 700px; margin-bottom: 1.5rem;
+    animation: fade-up .8s .2s ease both;
+  }
+  h1.hero-title em {
+    font-style: normal;
+    background: linear-gradient(135deg, var(--accent), var(--accent2), var(--accent3));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-sub {
+    font-size: 1.05rem; line-height: 1.7;
+    color: var(--text-muted); max-width: 500px;
+    margin-bottom: 3rem;
+    animation: fade-up .8s .3s ease both;
+  }
+
+  .hero-actions {
+    display: flex; gap: 1rem; flex-wrap: wrap;
+    animation: fade-up .8s .4s ease both;
+  }
+
+  .btn-primary {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700; font-size: .9rem;
+    letter-spacing: .12em; text-transform: uppercase;
+    color: var(--bg); background: var(--accent);
+    border: none; padding: .9rem 2.5rem;
+    cursor: none; text-decoration: none;
+    clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+    transition: background .2s, box-shadow .3s;
+    box-shadow: 0 0 0 rgba(0,200,255,0);
+  }
+  .btn-primary:hover {
+    background: #fff;
+    box-shadow: 0 0 30px var(--glow-strong), 0 0 60px var(--glow);
+  }
+
+  .btn-ghost {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600; font-size: .9rem;
+    letter-spacing: .12em; text-transform: uppercase;
+    color: var(--text-muted);
+    background: transparent;
+    border: 1px solid var(--border);
+    padding: .9rem 2.5rem;
+    cursor: none; text-decoration: none;
+    clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+    transition: color .2s, border-color .2s;
+  }
+  .btn-ghost:hover { color: var(--accent); border-color: var(--accent); }
+
+  .hero-stats {
+    position: absolute; bottom: 3rem; right: 4rem;
+    display: flex; gap: 3rem;
+    animation: fade-up .8s .6s ease both;
+  }
+  .stat { text-align: right; }
+  .stat-num {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700; font-size: 2.2rem;
+    color: var(--accent); line-height: 1;
+    display: block;
+  }
+  .stat-label {
+    font-size: .75rem; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--text-muted);
+  }
+
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* MARQUEE */
+  .marquee-wrap {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 0; overflow: hidden;
+    position: relative; z-index: 1;
+  }
+  .marquee-track {
+    display: flex; gap: 3rem;
+    animation: marquee 30s linear infinite;
+    width: max-content;
+  }
+  .marquee-item {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600; font-size: .8rem;
+    letter-spacing: .2em; text-transform: uppercase;
+    color: var(--text-dim);
+    display: flex; align-items: center; gap: 1rem;
+    white-space: nowrap;
+  }
+  .marquee-item .dot { width: 4px; height: 4px; background: var(--accent); border-radius: 50%; }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* SECTIONS */
+  section { position: relative; z-index: 1; }
+
+  .section-wrap {
+    max-width: 1200px; margin: 0 auto;
+    padding: 7rem 4rem;
+  }
+
+  .section-eyebrow {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .7rem; letter-spacing: .25em;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: 1rem;
+    display: flex; align-items: center; gap: .75rem;
+  }
+  .section-eyebrow::before {
+    content: ''; display: block;
+    width: 30px; height: 1px; background: var(--accent);
+  }
+
+  h2.section-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700; font-size: clamp(2rem, 3.5vw, 3rem);
+    line-height: 1.1; margin-bottom: 1.5rem;
+  }
+  h2.section-title em {
+    font-style: normal; color: var(--accent);
+  }
+
+  .section-desc {
+    font-size: 1rem; line-height: 1.8;
+    color: var(--text-muted); max-width: 500px;
+    margin-bottom: 4rem;
+  }
+
+  /* SERVICES */
+  #servicos { background: var(--surface); }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5px;
+  }
+
+  .service-card {
+    background: var(--surface2);
+    padding: 2.5rem 2rem;
+    position: relative; overflow: hidden;
+    transition: background .3s;
+    cursor: default;
+  }
+  .service-card::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    transform: scaleX(0); transition: transform .4s;
+  }
+  .service-card:hover { background: #151d28; }
+  .service-card:hover::before { transform: scaleX(1); }
+
+  .service-icon {
+    width: 48px; height: 48px;
+    background: linear-gradient(135deg, rgba(0,200,255,0.1), rgba(0,102,255,0.05));
+    border: 1px solid rgba(0,200,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 1.5rem;
+    clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+  }
+  .service-icon .material-icons { font-size: 22px; color: var(--accent); }
+
+  .service-num {
+    position: absolute; top: 1.5rem; right: 1.5rem;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .65rem; color: var(--text-dim);
+  }
+
+  .service-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700; font-size: 1.15rem;
+    letter-spacing: .05em; margin-bottom: .75rem;
+    color: var(--text);
+  }
+
+  .service-desc {
+    font-size: .88rem; line-height: 1.7;
+    color: var(--text-muted);
+  }
+
+  .service-arrow {
+    margin-top: 1.5rem;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .7rem; color: var(--text-dim);
+    display: flex; align-items: center; gap: .5rem;
+    transition: color .2s, gap .2s;
+  }
+  .service-card:hover .service-arrow { color: var(--accent); gap: .8rem; }
+
+  /* ABOUT */
+  #sobre .section-wrap {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: center;
+  }
+
+  .about-visual {
+    position: relative;
+  }
+  .about-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 3rem;
+    position: relative;
+  }
+  .about-box::before {
+    content: ''; position: absolute;
+    top: -1px; left: -1px; right: -1px; bottom: -1px;
+    background: linear-gradient(135deg, rgba(0,200,255,0.2), transparent 50%, rgba(123,47,255,0.1));
+    pointer-events: none; z-index: -1;
+  }
+  .about-scan {
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    animation: scan 3s linear infinite;
+  }
+  @keyframes scan {
+    from { top: 0; opacity: 1; }
+    to { top: 100%; opacity: 0; }
+  }
+  .about-code {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .78rem; line-height: 2;
+    color: var(--text-dim);
+  }
+  .about-code .kw { color: var(--accent2); }
+  .about-code .str { color: var(--accent); }
+  .about-code .fn { color: var(--accent3); }
+  .about-code .cm { color: var(--text-dim); font-style: italic; }
+
+  .about-corner {
+    position: absolute; width: 20px; height: 20px;
+  }
+  .about-corner.tl { top: -1px; left: -1px; border-top: 2px solid var(--accent); border-left: 2px solid var(--accent); }
+  .about-corner.tr { top: -1px; right: -1px; border-top: 2px solid var(--accent); border-right: 2px solid var(--accent); }
+  .about-corner.bl { bottom: -1px; left: -1px; border-bottom: 2px solid var(--accent); border-left: 2px solid var(--accent); }
+  .about-corner.br { bottom: -1px; right: -1px; border-bottom: 2px solid var(--accent); border-right: 2px solid var(--accent); }
+
+  .about-features {
+    margin-top: 2.5rem; display: flex; flex-direction: column; gap: 1.2rem;
+  }
+  .feature-item {
+    display: flex; align-items: flex-start; gap: 1rem;
+  }
+  .feature-dot {
+    width: 6px; height: 6px; background: var(--accent);
+    border-radius: 50%; margin-top: .4rem; flex-shrink: 0;
+    box-shadow: 0 0 8px var(--accent);
+  }
+  .feature-text { font-size: .9rem; line-height: 1.6; color: var(--text-muted); }
+  .feature-text strong { color: var(--text); font-weight: 600; }
+
+  /* TECH STACK */
+  #tecnologias { background: var(--surface); }
+  .tech-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1px;
+    background: var(--border);
+  }
+  .tech-item {
+    background: var(--surface2);
+    padding: 2rem 1.5rem;
+    display: flex; flex-direction: column;
+    align-items: center; gap: .75rem;
+    transition: background .2s;
+  }
+  .tech-item:hover { background: #151d28; }
+  .tech-icon {
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .tech-icon .material-icons { font-size: 28px; color: var(--text-dim); transition: color .2s; }
+  .tech-item:hover .tech-icon .material-icons { color: var(--accent); }
+  .tech-name {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600; font-size: .8rem;
+    letter-spacing: .1em; text-transform: uppercase;
+    color: var(--text-dim); text-align: center;
+    transition: color .2s;
+  }
+  .tech-item:hover .tech-name { color: var(--text-muted); }
+
+  /* PROCESS */
+  .process-steps {
+    display: flex; flex-direction: column; gap: 0;
+  }
+  .process-step {
+    display: grid; grid-template-columns: 80px 1px 1fr;
+    gap: 0 2rem; align-items: start;
+    padding-bottom: 3rem;
+  }
+  .step-num {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700; font-size: 2.5rem;
+    color: var(--text-dim); line-height: 1;
+    text-align: right; padding-top: .2rem;
+  }
+  .step-line {
+    display: flex; flex-direction: column; align-items: center; padding-top: .6rem;
+  }
+  .step-dot {
+    width: 10px; height: 10px; background: var(--accent);
+    border-radius: 50%; flex-shrink: 0;
+    box-shadow: 0 0 12px var(--accent);
+  }
+  .step-connector {
+    width: 1px; flex: 1; min-height: 60px;
+    background: linear-gradient(to bottom, var(--accent), transparent);
+    margin-top: 4px;
+  }
+  .process-step:last-child .step-connector { display: none; }
+  .step-content { padding-top: .1rem; }
+  .step-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700; font-size: 1.25rem;
+    letter-spacing: .05em; margin-bottom: .5rem;
+  }
+  .step-desc { font-size: .9rem; line-height: 1.7; color: var(--text-muted); }
+
+  /* CTA SECTION */
+  #contato {
+    background: var(--surface);
+    overflow: hidden;
+  }
+  .cta-wrap {
+    max-width: 1200px; margin: 0 auto;
+    padding: 7rem 4rem;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: center;
+  }
+  .cta-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700; font-size: clamp(2rem, 3vw, 2.8rem);
+    line-height: 1.1; margin-bottom: 1.5rem;
+  }
+  .cta-title em { font-style: normal; color: var(--accent); }
+  .cta-desc { font-size: .95rem; line-height: 1.8; color: var(--text-muted); margin-bottom: 2.5rem; }
+
+  .contact-form { display: flex; flex-direction: column; gap: 1rem; }
+  .form-group { display: flex; flex-direction: column; gap: .4rem; }
+  .form-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .65rem; letter-spacing: .2em;
+    text-transform: uppercase; color: var(--text-dim);
+  }
+  .form-input {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: .8rem 1rem;
+    color: var(--text);
+    font-family: 'Exo 2', sans-serif;
+    font-size: .9rem;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+    width: 100%;
+  }
+  .form-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(0,200,255,0.1);
+  }
+  .form-input::placeholder { color: var(--text-dim); }
+  textarea.form-input { resize: vertical; min-height: 120px; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+  .submit-btn {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700; font-size: .9rem;
+    letter-spacing: .12em; text-transform: uppercase;
+    color: var(--bg); background: var(--accent);
+    border: none; padding: 1rem 2rem;
+    cursor: none; margin-top: .5rem;
+    clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+    transition: background .2s, box-shadow .2s;
+    display: flex; align-items: center; gap: .75rem;
+    align-self: flex-start;
+  }
+  .submit-btn:hover { background: #fff; box-shadow: 0 0 30px var(--glow-strong); }
+
+  /* FOOTER */
+  footer {
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    padding: 3rem 4rem;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 2rem;
+    position: relative; z-index: 1;
+  }
+  .footer-logo {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700; font-size: 1.3rem;
+    letter-spacing: .15em; color: var(--text);
+  }
+  .footer-logo span { color: var(--accent); }
+  .footer-copy {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .65rem; letter-spacing: .15em;
+    color: var(--text-dim); text-align: center;
+  }
+  .footer-links {
+    display: flex; gap: 2rem; list-style: none;
+  }
+  .footer-links a {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: .8rem; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--text-dim);
+    text-decoration: none; transition: color .2s;
+  }
+  .footer-links a:hover { color: var(--accent); }
+
+  /* SCROLL INDICATOR */
+  .scroll-ind {
+    position: absolute; bottom: 2rem; left: 4rem;
+    display: flex; align-items: center; gap: .75rem;
+    animation: fade-up .8s .8s ease both;
+  }
+  .scroll-line {
+    width: 1px; height: 50px;
+    background: linear-gradient(to bottom, var(--accent), transparent);
+    animation: scroll-pulse 2s ease-in-out infinite;
+  }
+  .scroll-text {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: .6rem; letter-spacing: .2em;
+    color: var(--text-dim); writing-mode: vertical-lr;
+  }
+  @keyframes scroll-pulse {
+    0%,100% { opacity: 1; }
+    50% { opacity: .3; }
+  }
+
+  /* REVEAL ANIMATION */
+  .reveal {
+    opacity: 0; transform: translateY(40px);
+    transition: opacity .7s ease, transform .7s ease;
+  }
+  .reveal.visible {
+    opacity: 1; transform: translateY(0);
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    .hero { padding: 6rem 1.5rem 3rem; }
+    .hero-stats { position: static; margin-top: 3rem; flex-direction: row; justify-content: flex-start; gap: 2rem; }
+    .section-wrap { padding: 5rem 1.5rem; }
+    #sobre .section-wrap { grid-template-columns: 1fr; gap: 3rem; }
+    .cta-wrap { grid-template-columns: 1fr; gap: 3rem; padding: 5rem 1.5rem; }
+    .form-row { grid-template-columns: 1fr; }
+    footer { padding: 2rem 1.5rem; flex-direction: column; text-align: center; }
+    .scroll-ind { display: none; }
+    .hero-logo-svg { width: 220px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+        <img src="pdroti_white.png" class="nav-logo-svg" width="20%" alt="Logotipo Pdroti Solutions">
+        <!--
+    <svg class="nav-logo-svg" width="100" height="28" viewBox="0 0 100 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <text x="0" y="22" font-family="Rajdhani" font-weight="700" font-size="22" letter-spacing="1" fill="#e8edf5">PDR<tspan fill="#00c8ff">O</tspan>ti</text>
+    </svg>-->
+  </a>
+  <ul class="nav-links">
+    <li><a href="#inicio">Home</a></li>
+    <li><a href="#servicos">Serviços</a></li>
+    <li><a href="#sobre">Sobre</a></li>
+    <li><a href="#tecnologias">Tecnologias</a></li>
+    <li><a href="#processo">Processo</a></li>
+    <!--<li><a href="#contato">Contato</a></li>-->
+  </ul>
+  <button class="nav-cta" onclick="document.getElementById('contato').scrollIntoView({behavior:'smooth'})">
+    Fale Conosco
+  </button>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="inicio">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+
+  <div class="hero-tag">DIGITAL INNOVATIONS — EST. 2026</div>
+
+  <div class="hero-logo-wrap">
+    <img src="pdroti_white.png" class="hero-logo-svg" alt="Logotipo Pdroti Solutions">
+    <!-- SVG recreation of PDROTi logo -->
+    <!--
+    <svg class="hero-logo-svg" viewBox="0 0 380 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="lg1" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#e8edf5"/>
+          <stop offset="100%" stop-color="#a0afc0"/>
+        </linearGradient>
+        <linearGradient id="lgO" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#00c8ff"/>
+          <stop offset="100%" stop-color="#0066ff"/>
+        </linearGradient>
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="3" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <text x="4" y="82" font-family="Rajdhani,sans-serif" font-weight="700" font-size="90" letter-spacing="-2" fill="url(#lg1)">PDR</text>
+      
+      <circle cx="262" cy="44" r="36" fill="none" stroke="url(#lgO)" stroke-width="6" filter="url(#glow)"/>
+      <circle cx="262" cy="44" r="26" fill="none" stroke="rgba(0,200,255,0.3)" stroke-width="2"/>
+      <circle cx="262" cy="44" r="16" fill="none" stroke="rgba(0,200,255,0.15)" stroke-width="1.5"/>
+      
+      <path d="M 248 72 Q 262 82 276 72" fill="none" stroke="url(#lgO)" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+      <path d="M 242 78 Q 262 92 282 78" fill="none" stroke="rgba(0,200,255,0.4)" stroke-width="2" stroke-linecap="round"/>
+      <text x="300" y="82" font-family="Rajdhani,sans-serif" font-weight="700" font-size="90" letter-spacing="-2" fill="url(#lg1)">ti</text>-->
+      <!-- Digital Innovations text 
+      <text x="4" y="112" font-family="Exo 2,sans-serif" font-weight="300" font-size="13" letter-spacing="6" fill="#6b7a90">DIGITAL</text>
+      <text x="88" y="112" font-family="Exo 2,sans-serif" font-weight="600" font-size="13" letter-spacing="6" fill="#6b7a90">INNOVATIONS</text>
+    </svg>-->
+  </div>
+
+  <h2 class="hero-title">
+    Transformando ideias<br>
+    <em>em soluções digitais</em><br>
+    de alto impacto
+  </h2>
+  <p class="hero-sub">
+    Desenvolvemos software, sistemas e experiências digitais que impulsionam negócios. Da arquitetura ao deploy, entregamos tecnologia com precisão.
+  </p>
+
+  <div class="hero-actions">
+    <a href="#servicos" class="btn-primary">Conheça Nossos Serviços</a>
+    <a href="#sobre" class="btn-ghost">Sobre a PDROTi</a>
+  </div>
+
+  <!--
+  <div class="hero-stats">
+    <div class="stat">
+      <span class="stat-num">50+</span>
+      <span class="stat-label">Projetos Entregues</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">30+</span>
+      <span class="stat-label">Clientes Ativos</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">99%</span>
+      <span class="stat-label">Satisfação</span>
+    </div>
+  </div>-->
+
+  <div class="scroll-ind">
+    <div class="scroll-line"></div>
+    <span class="scroll-text">SCROLL</span>
+  </div>
+
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track" id="marquee">
+    <span class="marquee-item"><span class="dot"></span>Desenvolvimento Web</span>
+    <span class="marquee-item"><span class="dot"></span>Aplicativos Mobile</span>
+    <span class="marquee-item"><span class="dot"></span>Sistemas Corporativos</span>
+    <span class="marquee-item"><span class="dot"></span>APIs & Integrações</span>
+    <span class="marquee-item"><span class="dot"></span>Cloud & DevOps</span>
+    <span class="marquee-item"><span class="dot"></span>Inteligência Artificial</span>
+    <span class="marquee-item"><span class="dot"></span>UX / UI Design</span>
+    <span class="marquee-item"><span class="dot"></span>Segurança Digital</span>
+    <span class="marquee-item"><span class="dot"></span>Consultoria em TI</span>
+    <span class="marquee-item"><span class="dot"></span>Desenvolvimento Web</span>
+    <span class="marquee-item"><span class="dot"></span>Aplicativos Mobile</span>
+    <span class="marquee-item"><span class="dot"></span>Sistemas Corporativos</span>
+    <span class="marquee-item"><span class="dot"></span>APIs & Integrações</span>
+    <span class="marquee-item"><span class="dot"></span>Cloud & DevOps</span>
+    <span class="marquee-item"><span class="dot"></span>Inteligência Artificial</span>
+    <span class="marquee-item"><span class="dot"></span>UX / UI Design</span>
+    <span class="marquee-item"><span class="dot"></span>Segurança Digital</span>
+    <span class="marquee-item"><span class="dot"></span>Consultoria em TI</span>
+  </div>
+</div>
+
+<!-- SERVIÇOS -->
+<section id="servicos">
+  <div class="section-wrap">
+    <div class="reveal">
+      <div class="section-eyebrow">O Que Fazemos</div>
+      <h2 class="section-title">Soluções <em>completas</em> para<br>o seu negócio digital</h2>
+      <p class="section-desc">Da concepção à entrega, cobrimos todo o espectro do desenvolvimento tecnológico com excelência e metodologia ágil.</p>
+    </div>
+    <div class="services-grid reveal">
+      <div class="service-card">
+        <span class="service-num">01</span>
+        <div class="service-icon"><span class="material-icons">web</span></div>
+        <h3 class="service-title">Desenvolvimento Web</h3>
+        <p class="service-desc">Sites, portais e plataformas web de alta performance, responsivos e otimizados para conversão e SEO.</p>
+        <div class="service-arrow">Ver mais →</div>
+      </div>
+      <div class="service-card">
+        <span class="service-num">02</span>
+        <div class="service-icon"><span class="material-icons">smartphone</span></div>
+        <h3 class="service-title">Apps Mobile</h3>
+        <p class="service-desc">Aplicativos iOS e Android nativos ou híbridos com experiências fluidas e intuitivas para seus usuários.</p>
+        <div class="service-arrow">Ver mais →</div>
+      </div>
+      <div class="service-card">
+        <span class="service-num">03</span>
+        <div class="service-icon"><span class="material-icons">cloud</span></div>
+        <h3 class="service-title">Cloud & DevOps</h3>
+        <p class="service-desc">Infraestrutura escalável na nuvem, CI/CD automatizado e monitoramento contínuo para máxima disponibilidade.</p>
+        <div class="service-arrow">Ver mais →</div>
+      </div>
+      <div class="service-card">
+        <span class="service-num">04</span>
+        <div class="service-icon"><span class="material-icons">psychology</span></div>
+        <h3 class="service-title">Inteligência Artificial</h3>
+        <p class="service-desc">Soluções com machine learning, processamento de linguagem natural e automação inteligente de processos.</p>
+        <div class="service-arrow">Ver mais →</div>
+      </div>
+      <div class="service-card">
+        <span class="service-num">05</span>
+        <div class="service-icon"><span class="material-icons">api</span></div>
+        <h3 class="service-title">APIs & Integrações</h3>
+        <p class="service-desc">Desenvolvimento e integração de APIs RESTful e GraphQL para conectar sistemas e otimizar fluxos de dados.</p>
+        <div class="service-arrow">Ver mais →</div>
+      </div>
+      <div class="service-card">
+        <span class="service-num">06</span>
+        <div class="service-icon"><span class="material-icons">palette</span></div>
+        <h3 class="service-title">UX / UI Design</h3>
+        <p class="service-desc">Design centrado no usuário com pesquisa, prototipagem e sistemas de design que elevam a experiência digital.</p>
+        <div class="service-arrow">Ver mais →</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOBRE -->
+<section id="sobre">
+  <div class="section-wrap">
+    <div class="about-visual reveal">
+      <div class="about-box">
+        <div class="about-scan"></div>
+        <div class="about-corner tl"></div>
+        <div class="about-corner tr"></div>
+        <div class="about-corner bl"></div>
+        <div class="about-corner br"></div>
+        <div class="about-code">
+<span class="cm">// PDROTi Digital Innovations</span>
+<span class="kw">const</span> <span class="fn">mission</span> = {
+  &nbsp;&nbsp;name: <span class="str">"PDROTi"</span>,
+  &nbsp;&nbsp;focus: <span class="str">"Digital Transformation"</span>,
+  &nbsp;&nbsp;approach: <span class="str">"Innovation + Precision"</span>,
+  &nbsp;&nbsp;values: [
+  &nbsp;&nbsp;&nbsp;&nbsp;<span class="str">"Qualidade"</span>,
+  &nbsp;&nbsp;&nbsp;&nbsp;<span class="str">"Transparência"</span>,
+  &nbsp;&nbsp;&nbsp;&nbsp;<span class="str">"Inovação contínua"</span>
+  &nbsp;&nbsp;],
+  &nbsp;&nbsp;<span class="fn">deliver</span>: () <span class="kw">=></span> <span class="str">"Excelência"</span>
+};
+        </div>
+      </div>
+    </div>
+    <div class="reveal">
+      <div class="section-eyebrow">Quem Somos</div>
+      <h2 class="section-title">Tecnologia que <em>move</em><br>negócios para frente</h2>
+      <p class="section-desc">A PDROTi é uma empresa especializada em inovação digital, comprometida em entregar soluções tecnológicas que geram resultados reais e mensuráveis.</p>
+      <div class="about-features">
+        <div class="feature-item">
+          <div class="feature-dot"></div>
+          <p class="feature-text"><strong>Equipe especializada</strong> com profissionais experientes em todas as camadas do desenvolvimento moderno.</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-dot"></div>
+          <p class="feature-text"><strong>Metodologia ágil</strong> com sprints, entregas contínuas e comunicação transparente em todo o processo.</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-dot"></div>
+          <p class="feature-text"><strong>Foco em resultados</strong> — cada solução é desenhada para gerar impacto real no negócio do cliente.</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-dot"></div>
+          <p class="feature-text"><strong>Suporte contínuo</strong> com monitoramento, manutenção e evolução dos sistemas após o lançamento.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TECNOLOGIAS -->
+<section id="tecnologias">
+  <div class="section-wrap">
+    <div class="reveal" style="text-align:center; max-width:100%">
+      <div class="section-eyebrow" style="justify-content:center">Stack Tecnológico</div>
+      <h2 class="section-title" style="margin-bottom:1rem">Ferramentas de <em>ponta</em></h2>
+      <p class="section-desc" style="max-width:500px; margin:0 auto 3rem">Utilizamos as tecnologias mais modernas e consolidadas do mercado para garantir robustez e escalabilidade.</p>
+    </div>
+    <div class="tech-grid reveal">
+      <div class="tech-item"><div class="tech-icon"><span class="material-icons">code</span></div><span class="tech-name">React</span></div>
+      <div class="tech-item"><div class="tech-icon"><span class="material-icons">terminal</span></div><span class="tech-name">Node.js</span></div>
+      <div class="tech-item"><div class="tech-icon"><span class="material-icons">cloud_queue</span></div><span class="tech-name">AWS</span></div>
+      <div class="tech-item"><div class="tech-icon"><span class="material-icons">storage</span></div><span class="tech-name">PostgreSQL</span></div>
+      <div class="tech-item"><div class="tech-icon"><span class="material-icons">phone_android</span></div><span class="tech-name">React Native</span></div>
+      <div class="tech-item"><div class="tech-icon"><span class="material-icons">hub</span></div><span class="tech-name">Docker</span></div>
+      <div class="tech-item"><div class="tech-icon"><span class="material-icons">account_tree</span></div><span class="tech-name">Kubernetes</span></div>
+      <div class="tech-item"><div class="tech-icon"><span class="material-icons">psychology_alt</span></div><span class="tech-name">Python / AI</span></div>
+      <div class="tech-item"><div class="tech-icon"><span class="material-icons">data_object</span></div><span class="tech-name">TypeScript</span></div>
+      <div class="tech-item"><div class="tech-icon"><span class="material-icons">bolt</span></div><span class="tech-name">Next.js</span></div>
+      <div class="tech-item"><div class="tech-icon"><span class="material-icons">security</span></div><span class="tech-name">Auth & Security</span></div>
+      <div class="tech-item"><div class="tech-icon"><span class="material-icons">analytics</span></div><span class="tech-name">Data Analytics</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESSO -->
+<section id="processo">
+  <div class="section-wrap">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:start">
+      <div class="reveal">
+        <div class="section-eyebrow">Como Trabalhamos</div>
+        <h2 class="section-title">Nosso <em>processo</em><br>de entrega</h2>
+        <p class="section-desc">Um fluxo estruturado que garante qualidade, previsibilidade e alinhamento em cada etapa do projeto.</p>
+      </div>
+      <div class="process-steps reveal">
+        <div class="process-step">
+          <span class="step-num">01</span>
+          <div class="step-line"><div class="step-dot"></div><div class="step-connector"></div></div>
+          <div class="step-content">
+            <h3 class="step-title">Descoberta & Briefing</h3>
+            <p class="step-desc">Entendimento profundo do negócio, objetivos, público-alvo e requisitos técnicos do projeto.</p>
+          </div>
+        </div>
+        <div class="process-step">
+          <span class="step-num">02</span>
+          <div class="step-line"><div class="step-dot"></div><div class="step-connector"></div></div>
+          <div class="step-content">
+            <h3 class="step-title">Arquitetura & Design</h3>
+            <p class="step-desc">Definição da arquitetura técnica, prototipagem e validação do design antes do desenvolvimento.</p>
+          </div>
+        </div>
+        <div class="process-step">
+          <span class="step-num">03</span>
+          <div class="step-line"><div class="step-dot"></div><div class="step-connector"></div></div>
+          <div class="step-content">
+            <h3 class="step-title">Desenvolvimento Ágil</h3>
+            <p class="step-desc">Sprints iterativos com entregas incrementais, code reviews e testes automatizados contínuos.</p>
+          </div>
+        </div>
+        <div class="process-step">
+          <span class="step-num">04</span>
+          <div class="step-line"><div class="step-dot"></div><div class="step-connector"></div></div>
+          <div class="step-content">
+            <h3 class="step-title">QA & Testes</h3>
+            <p class="step-desc">Testes rigorosos de qualidade, performance, segurança e usabilidade antes do lançamento.</p>
+          </div>
+        </div>
+        <div class="process-step">
+          <span class="step-num">05</span>
+          <div class="step-line"><div class="step-dot"></div></div>
+          <div class="step-content">
+            <h3 class="step-title">Deploy & Suporte</h3>
+            <p class="step-desc">Lançamento monitorado com suporte técnico, manutenção evolutiva e relatórios de performance.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTATO -->
+<section id="contato">
+  <div class="cta-wrap">
+    <div class="reveal">
+      <div class="section-eyebrow">Entre em Contato</div>
+      <h2 class="cta-title">Vamos construir algo<br><em>extraordinário</em> juntos</h2>
+      <p class="cta-desc">Conte-nos sobre o seu projeto. Nossa equipe analisará seu briefing e retornará com uma proposta personalizada em até 48 horas.</p>
+      <div style="display:flex;flex-direction:column;gap:1rem">
+        <div style="display:flex;align-items:center;gap:.75rem;color:var(--text-muted);font-size:.9rem">
+          <span class="material-icons" style="font-size:18px;color:var(--accent)">email</span>
+          contato@pdroti.com.br
+        </div>
+        <div style="display:flex;align-items:center;gap:.75rem;color:var(--text-muted);font-size:.9rem">
+          <span class="material-icons" style="font-size:18px;color:var(--accent)">location_on</span>
+          Brasil — Atendimento Nacional
+        </div>
+      </div>
+    </div>
+    <div class="reveal">
+      <div class="contact-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Nome</label>
+            <input class="form-input" type="text" placeholder="Seu nome">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Empresa</label>
+            <input class="form-input" type="text" placeholder="Sua empresa">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">E-mail</label>
+          <input class="form-input" type="email" placeholder="seu@email.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Serviço de Interesse</label>
+          <select class="form-input">
+            <option value="" disabled selected>Selecione...</option>
+            <option>Desenvolvimento Web</option>
+            <option>Aplicativo Mobile</option>
+            <option>Cloud & DevOps</option>
+            <option>Inteligência Artificial</option>
+            <option>Consultoria em TI</option>
+            <option>Outro</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mensagem</label>
+          <textarea class="form-input" placeholder="Descreva seu projeto ou necessidade..."></textarea>
+        </div>
+        <button class="submit-btn">
+          <span class="material-icons" style="font-size:18px">send</span>
+          Enviar Mensagem
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <img class="footer-logo" width="8%" alt="Logotipo Pdroti Solutions" src="pdroti_white.png">
+  <!--<div class="footer-logo">PDR<span>O</span>ti<br><span style="font-size:.6rem;font-weight:300;letter-spacing:.2em;color:var(--text-dim)">DIGITAL INNOVATIONS</span></div>-->
+  <p class="footer-copy">© 2026 PDROTi Digital Innovations<br>Todos os direitos reservados.</p>
+  <ul class="footer-links">
+    <li><a href="#">Privacidade</a></li>
+    <li><a href="#">Termos</a></li>
+    <li><a href="#contato">Contato</a></li>
+  </ul>
+</footer>
+
+<script>
+  // CURSOR
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  function animCursor() {
+    cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+    rx += (mx - rx) * 0.15; ry += (my - ry) * 0.15;
+    ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+    requestAnimationFrame(animCursor);
+  }
+  animCursor();
+
+  // REVEAL ON SCROLL
+  const reveals = document.querySelectorAll('.reveal');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => obs.observe(el));
+
+  // SUBMIT FEEDBACK
+  document.querySelector('.submit-btn').addEventListener('click', function() {
+    this.textContent = '✓ Mensagem enviada!';
+    this.style.background = '#00c8ff';
+    setTimeout(() => {
+      this.innerHTML = '<span class="material-icons" style="font-size:18px">send</span> Enviar Mensagem';
+      this.style.background = '';
+    }, 3000);
+  });
+</script>
+</body>
+</html>
